@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ayat Al-Qur'an Random</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ayat Al-Qur'an Acak</title>
 </head>
 <body>
-  <h2>Ayat Al-Qur'an Acak</h2>
+  <h1>Ayat Al-Qur'an Random</h1>
   <p id="arab">Memuat...</p>
   <p id="latin"></p>
   <p id="terjemah"></p>
-
   <button onclick="getRandomAyat()">Ambil Ayat Baru</button>
 
   <script>
@@ -20,19 +19,20 @@
       document.getElementById("terjemah").textContent = "";
 
       try {
-        const suratId = Math.floor(Math.random() * 114) + 1;
-        const apiUrl = `https://equran.id/api/v2/surat/${suratId}`;
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+        const surat = Math.floor(Math.random() * 114) + 1;
+        const ayat = Math.floor(Math.random() * 10) + 1;
 
-        const res = await fetch(proxyUrl);
+        const url = `https://api.alquran.cloud/v1/ayah/${surat}:${ayat}/editions/quran-uthmani,id.indonesian`;
+
+        const res = await fetch(url);
         const data = await res.json();
 
-        const ayatList = data.data.ayat;
-        const ayat = ayatList[Math.floor(Math.random() * ayatList.length)];
+        const arab = data.data.find(d => d.edition.identifier === "quran-uthmani");
+        const indo = data.data.find(d => d.edition.identifier === "id.indonesian");
 
-        document.getElementById("arab").textContent = ayat.ar;
-        document.getElementById("latin").textContent = ayat.tr;
-        document.getElementById("terjemah").textContent = ayat.idn;
+        document.getElementById("arab").textContent = arab.text;
+        document.getElementById("latin").textContent = `(QS. ${arab.surah.englishName} : ${arab.numberInSurah})`;
+        document.getElementById("terjemah").textContent = indo.text;
       } catch (error) {
         console.error(error);
         document.getElementById("arab").textContent = "❌ Gagal memuat ayat.";
